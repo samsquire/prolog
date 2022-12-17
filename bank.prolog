@@ -23,7 +23,7 @@ interception_between(
             )],
         _), FACTS, NEW_FACTS1) :- 
     print("Found fact no more body"),
-    append(FACTS, problem(change(ARGUMENT_VALUE)), NEW_FACTS1).
+    append(FACTS, [problem(change(ARGUMENT_VALUE))], NEW_FACTS1).
 
 
 
@@ -38,7 +38,7 @@ interception_between(
             )],
         _), FACTS, NEW_FACTS2) :- 
     print("Found fact, calling recursively"),
-    append(FACTS, problem(change(ARGUMENT_VALUE)), NEW_FACTS1),
+    append(FACTS, [problem(change(ARGUMENT_VALUE))], NEW_FACTS1),
 
     interception_between(
         program([function(withdraw, _, _
