@@ -13,63 +13,70 @@ program([
     ]).
 
 interception_between(
+    program([function(withdraw, ARGUMENTS, BODY
+    )],
+    MAIN),
+    matched_program([function(withdraw, ARGUMENTS, BODY
+    )], MAIN),
+    [], []).
+
+interception_between(
     program([function(withdraw, _, _
     )],
     _),
-    program([
+    matched_program([
             function(withdraw, 
                 [argument(_, ARGUMENT_VALUE)|_], 
                 [change(ARGUMENT_VALUE, _)|[]]
             )],
-        _), FACTS, NEW_FACTS1) :- 
+        _), FACTS, NEW_FACTS) :- 
     print("Found fact no more body"),
-    append(FACTS, [problem(change(ARGUMENT_VALUE))], NEW_FACTS1).
-
+    NEW_FACTS=[problem(change(ARGUMENT_VALUE))|FACTS].
 
 
 interception_between(
     program([function(withdraw, _, _
     )],
     _),
-    program([
+    matched_program([
+            function(withdraw, 
+                [argument(_, _)|[]], 
+                []
+            )],
+        _), _, _).
+
+interception_between(
+    program([function(withdraw, _, _
+    )],
+    _),
+    matched_program([
             function(withdraw, 
                 [argument(_, ARGUMENT_VALUE)|ARGUMENT_LIST], 
                 [change(ARGUMENT_VALUE, _)|BODY_LIST]
             )],
-        _), FACTS, NEW_FACTS2) :- 
+        _), FACTS, OUTPUT_FACTS) :- 
     print("Found fact, calling recursively"),
-    append(FACTS, [problem(change(ARGUMENT_VALUE))], NEW_FACTS1),
+    NEW_FACTS=[problem(change(ARGUMENT_VALUE))|FACTS],
 
     interception_between(
         program([function(withdraw, _, _
         )],
         _),
-        program([
+        matched_program([
                 function(withdraw, 
                     ARGUMENT_LIST, 
                     BODY_LIST
                 )],
-            _), NEW_FACTS1, NEW_FACTS2).
+            _), NEW_FACTS, OUTPUT_FACTS).
 
 interception_between(
     program([function(withdraw, _, _
     )],
     _),
-    program([
+    matched_program([
             function(withdraw, 
                 [], 
                 []
             )],
-        _), [], _).
-
-interception_between(
-    program([function(withdraw, _, _
-    )],
-    _),
-    program([
-            function(withdraw, 
-                _, 
-                []
-            )],
-        _), [], _).
-
+        _), [], []) :-
+    print("Empty match").
